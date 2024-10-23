@@ -1,0 +1,33 @@
+{
+  "tutors": [
+    {
+      "id": 0,
+      "firstName": "Stephen",
+      "lastName": "Smith",
+      "telephone": "123456",
+      "email": "john@smith.com",
+      "city": "New York",
+      "role": "Member"
+    },
+    {
+      "id": 1,
+      "firstName": "Silviu",
+      "lastName": "Barbu",
+      "telephone": "123456",
+      "email": "john@smith.com",
+      "city": "New York",
+      "role": "Member"
+    }
+  ],
+  "cities": [
+    {
+      "id": 2,
+      "name": "San Francisco"
+    },
+    {
+      "id": 3,
+      "name": "Los Angeles"
+    }
+  ],
+  "faculties": []
+}

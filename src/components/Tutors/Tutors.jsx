@@ -1,80 +1,110 @@
-import { Component } from "react";
 import styles from "./Tutors.module.css";
-import PropTypes from "prop-types";
+import Button from "../common/Button/Button";
 import AddTutor from "./AddTutor/AddTutor";
 import Icon from "../common/Icon/Icon";
+import { useEffect, useState, useContext, useRef } from "react";
+import tutorsService from "../../services/tutorsService";
+import PropTypes from "prop-types";
+import { ColorContext } from "../../App";
 
-class Tutors extends Component {
-  state = {
-    isAddFormVisible: false,
-    list: [
-      {
-        id: 0,
-        firstName: "Antonio",
-        lastName: "García",
-        phone: "+34 456 890 302",
-        email: "antonio.garcia@goit.global",
-        city: "Madrid",
-        options: "Group creation, editing teacher profiles",
-      },
-    ],
-  };
-  renderList = (items) => {
+const TUTORS_KEY = "tutors";
+
+const Tutors = ({ propForAddTutor }) => {
+  const contextValue = useContext(ColorContext);
+
+  const [isAddFormVisible, setIsAddFormVisible] = useState(false);
+  const [list, setList] = useState([]);
+  const [error, setError] = useState("");
+  const [isLoading, setIsloading] = useState(false);
+
+  const test = useRef(null);
+
+  useEffect(() => {
+    async function getTutors() {
+      const response = await tutorsService.get();
+      setList(response);
+    }
+
+    setIsloading(true);
+    console.dir(test.current.tagName);
+    getTutors()
+      .catch(() => {
+        setError("A aparut o eroare la obtinerea listei de tutori");
+      })
+      .finally(() => setIsloading(false));
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem(TUTORS_KEY, JSON.stringify(list));
+  }, [list]);
+
+  const renderList = (items) => {
+    if (!items || !Array.isArray(items)) {
+      return <>Loading...</>;
+    }
+
+    if (items.length === 0) {
+      return <div>There are no tutors.</div>;
+    }
+
     return items.map((el) => {
+      const name = `${el.firstName} ${el.lastName}`;
+
       return (
         <div key={el.id} className={styles.tutorsListItem}>
-          <div>{el.firstName}</div>
-          <div>{el.lastName}</div>
-          <div className={styles.tutorsListContainer}>
+          <div>{name}</div>
+          <div className={styles.address}>
             <span>{el.email}</span>
-            <span>{el.phone}</span>
+            <span>{el.telephone}</span>
             <span>{el.city}</span>
           </div>
+          <div>{el.role}</div>
         </div>
       );
     });
   };
 
-  handleTutor = (data) => {
-    const newId = this.state.list.length > 0 ? this.state.list.length : 0;
-
+  const handleTutor = (data) => {
+    const newId = list.length > 0 ? list.length : 0;
+    console.log(data, "data din handleTutor");
     const tutorToAdd = {
       id: newId,
-      firstName: data.surname,
-      lastName: data.name,
+      firstName: data.name,
+      lastName: data.surname,
+      telephone: data.phone,
       email: data.email,
-      phone: data.phone,
       city: data.city,
+      role: "Member",
     };
 
-    this.setState((prevState) => {
-      return {
-        list: [...prevState.list, tutorToAdd],
-        isAddFormVisible: false,
-      };
+    /**
+     * Pentru orice state care este un obiect sau array si avem nevoie de starea precedenta, folosim metoda de mai jos
+     */
+
+    setList((prevState) => {
+      return [...prevState, tutorToAdd];
     });
+    setIsAddFormVisible(false);
   };
 
-  render() {
-    const { isAddFormVisible, list } = this.state;
-    return (
-      <section className="section">
-        <div>
-          <Icon variant="cat" label="cat" />
-          <h1>Tutors</h1>
-        </div>
-        <div className={styles.tutorsList}>{this.renderList(list)}</div>
-        {isAddFormVisible && <AddTutor onFormSubmit={this.handleTutor} />}
-        <button onClick={() => this.setState({ isAddFormVisible: true })}>
-          Add Tutor
-        </button>
-      </section>
-    );
-  }
-}
-
-Tutors.propTypes = {
-  list: PropTypes.array,
+  return (
+    <section ref={test} className="section">
+      <h1>{contextValue}</h1>
+      <h1>
+        <Icon variant="cat" label="cat" />
+        <span>Tutors</span>
+      </h1>
+      <div className={`box ${styles.tutorsList}`}>{renderList(list)}</div>
+      {isAddFormVisible && (
+        <AddTutor testProp={propForAddTutor} onFormSubmit={handleTutor} />
+      )}
+      <Button action={() => setIsAddFormVisible(true)}>Add Tutor</Button>
+    </section>
+  );
 };
 
 export default Tutors;
+
+Tutors.propTypes = {
+  propForAddTutor: PropTypes.string,
+};

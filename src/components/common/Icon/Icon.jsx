@@ -1,11 +1,12 @@
-import React from "react";
-import robotHead from "../../../assets/robot-head.png";
-import cat from "../../../assets/cat.png";
-import pin from "../../../assets/pin.png";
-import pencil from "../../../assets/pencil.png";
-import handPointing from "../../../assets/hand-pointing.png";
+import robotHead from "../../../images/icons/robot-head.png";
+import cat from "../../../images/icons/cat.png";
+import pin from "../../../images/icons/pin.png";
+import pencil from "../../../images/icons/pencil.png";
+import handPointing from "../../../images/icons/hand-pointing.png";
 
-const Icon = ({ variant, label, size = 24 }) => {
+import React from "react";
+
+export default function Icon({ variant, label, size = 24 }) {
   function getVariant(variant) {
     switch (variant) {
       case "robot":
@@ -18,9 +19,10 @@ const Icon = ({ variant, label, size = 24 }) => {
         return pencil;
       case "handpointing":
         return handPointing;
+      default:
+        return <robot />;
     }
   }
-  return <img src={getVariant(variant)} alt={label} height={size} />;
-};
 
-export default Icon;
+  return <img src={getVariant(variant)} alt={label} height={size} />;
+}

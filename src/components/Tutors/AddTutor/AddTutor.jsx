@@ -1,85 +1,113 @@
-import React, { Component } from "react";
+import { useEffect, useState } from "react";
+import PropTypes from "prop-types";
+import Button from "../../common/Button/Button";
 
-export default class AddTutor extends Component {
-  state = {
-    surname: "",
-    name: "",
-    phone: "",
-    city: "",
-    email: "",
-  };
-  handleSubmit = (e) => {
+const AddTutor = (props) => {
+  const { onFormSubmit, testProp } = props;
+
+  const [surname, setSurname] = useState("");
+  const [username, setUsername] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [city, setCity] = useState("");
+
+  const handleSubmit = (e) => {
     e.preventDefault();
-    this.props.onFormSubmit(this.state);
+    const user = {
+      surname,
+      name: username,
+      phone,
+      email,
+      city,
+    };
+    onFormSubmit(user);
   };
-  handleChange = (e) => {
-    const { name, value } = e.target;
-    this.setState({ [name]: value });
+
+  const handleChange = (evt) => {
+    const { name, value } = evt.target;
+    //this.setState({ [name]: value });
+    const action = {
+      surname: setSurname,
+      username: setUsername,
+      phone: setPhone,
+      email: setEmail,
+      city: setCity,
+    };
+    action[name](value); //action[surname](setSurname) -> setSurname(Surname)
   };
-  render() {
-    const { surname, name, phone, city, email } = this.state;
-    return (
-      <>
-        <form onSubmit={this.handleSubmit}>
-          <h1>Add Tutor</h1>
-          <label>
-            <span>Surname</span>
-            <input
-              type="text"
-              value={surname}
-              name="surname"
-              placeholder="Surname"
-              onChange={this.handleChange}
-              required
-            ></input>
-          </label>
-          <label>
-            <span>Name</span>
-            <input
-              type="text"
-              value={name}
-              name="name"
-              placeholder="Name"
-              onChange={this.handleChange}
-              required
-            ></input>
-          </label>
-          <label>
-            <span>Phone</span>
-            <input
-              type="tel"
-              value={phone}
-              name="phone"
-              placeholder="Phone"
-              onChange={this.handleChange}
-              required
-            ></input>
-          </label>
-          <label>
-            <span>City</span>
-            <input
-              type="text"
-              value={city}
-              name="city"
-              placeholder="City"
-              onChange={this.handleChange}
-              required
-            ></input>
-          </label>
-          <label>
-            <span>Email</span>
-            <input
-              type="email"
-              value={email}
-              name="email"
-              placeholder="Email"
-              onChange={this.handleChange}
-              required
-            ></input>
-          </label>
-          <button type="submit">Invite</button>
-        </form>
-      </>
-    );
-  }
-}
+
+  return (
+    <form className="form" onSubmit={handleSubmit}>
+      <h1>Add Tutor</h1>
+      <h1>{testProp}</h1>
+      <label>
+        <span>Surname</span>
+        <input
+          type="text"
+          value={surname}
+          name="surname"
+          placeholder="Surname"
+          onChange={handleChange}
+          required
+        />
+      </label>
+
+      <label>
+        <span>Name</span>
+        <input
+          type="text"
+          value={username}
+          name="username"
+          placeholder="Name"
+          onChange={handleChange}
+          required
+        />
+      </label>
+
+      <label>
+        <span>Phone</span>
+        <input
+          type="tel"
+          value={phone}
+          name="phone"
+          placeholder="Phone"
+          onChange={handleChange}
+          required
+        />
+      </label>
+
+      <label>
+        <span>Email</span>
+        <input
+          type="email"
+          value={email}
+          name="email"
+          placeholder="Email"
+          onChange={handleChange}
+          required
+        />
+      </label>
+
+      <label>
+        <span>City</span>
+        <input
+          type="text"
+          value={city}
+          name="city"
+          placeholder="City"
+          onChange={handleChange}
+          required
+        />
+      </label>
+
+      <Button type="submit">Invite</Button>
+    </form>
+  );
+};
+
+AddTutor.propTypes = {
+  onFormSubmit: PropTypes.func,
+  testProp: PropTypes.string,
+};
+
+export default AddTutor;
