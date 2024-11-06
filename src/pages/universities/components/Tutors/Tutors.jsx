@@ -1,13 +1,16 @@
 import styles from "./Tutors.module.css";
-import Button from "../../../common/Button/Button";
+import Button from "../../../common/components/Button/Button";
 import AddTutor from "./AddTutor/AddTutor";
-import Icon from "../../../common/Icon/Icon";
-import { useEffect, useRef, useState } from "react";
-import tutorsService from "../../../../service/tutorsService";
+import Icon from "../../../common/components/Icon/Icon";
+import { useContext, useEffect, useRef, useState } from "react";
+import tutorsService from "../../../common/service/tutorsService";
+import { ColorContext } from "../../../SharedLayout";
 
 const TUTORS_KEY = "tutors";
 
 const Tutors = () => {
+  const contextValue = useContext(ColorContext);
+
   const [isAddFormVisible, setIsAddFormVisible] = useState(false);
   const [list, setList] = useState([]);
   const [error, setError] = useState("");
@@ -33,12 +36,6 @@ const Tutors = () => {
   useEffect(() => {
     localStorage.setItem(TUTORS_KEY, JSON.stringify(list));
   }, [list]);
-
-  console.dir(test?.current);
-
-  useEffect(() => {
-    console.dir(test?.current.scrollWidth);
-  }, []);
 
   const renderList = (items) => {
     if (!items || !Array.isArray(items)) {
@@ -91,6 +88,7 @@ const Tutors = () => {
 
   return (
     <section ref={test} className="section">
+      <code>Color: {contextValue}</code>
       <h1>
         <Icon variant="cat" label="cat" />
         <span>Tutors</span>

@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import PropTypes from "prop-types";
-import Button from "../../../../common/Button/Button";
+import Button from "../../../../common/components/Button/Button";
 
 const AddTutor = (props) => {
   const { onFormSubmit } = props;
@@ -35,13 +35,6 @@ const AddTutor = (props) => {
     };
     action[name](value);
   };
-
-  useEffect(() => {
-    console.log("Add tutor a fost modificat");
-    return () => {
-      console.log("Add tutor a fost sters din DOM");
-    };
-  }, []);
 
   return (
     <form className="form" onSubmit={handleSubmit}>

@@ -2,24 +2,24 @@ import "./App.css";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import SharedLayout from "./pages/SharedLayout";
 import UniversitiesPage from "./pages/universities/UniversitiesPage";
-// import FacultiesPage from "./pages/faculties/FacultiesPage";
-// import FacultyPage from "./pages/faculties/components/faculty/FacultyPage";
-// import FacultyDescription from "./pages/faculties/components/faculty/components/FacultyDescription";
-// import FacultyHistory from "./pages/faculties/components/faculty/components/FacultyHistory";
 import NotFoundPage from "./pages/NotFoundPage";
 import { lazy } from "react";
 
-// Importurile dinamice ( lazy ) trebuie sa fie dupa importurile normale
+// Importurile cu lazy (dinamice), trebuie sa fie dupa cele normale
+
 const FacultiesPage = lazy(() => import("./pages/faculties/FacultiesPage"));
-const FacultyPage = lazy(() =>
-  import("./pages/faculties/components/faculty/FacultyPage")
-);
+const FacultyPage = lazy(() => import("./pages/faculties/faculty/FacultyPage"));
 const FacultyDescription = lazy(() =>
-  import("./pages/faculties/components/faculty/components/FacultyDescription")
+  import("./pages/faculties/faculty/components/FacultyDescription")
 );
 const FacultyHistory = lazy(() =>
-  import("./pages/faculties/components/faculty/components/FacultyHistory")
+  import("./pages/faculties/faculty/components/FacultyHistory")
 );
+
+// import FacultiesPage from './pages/FacultiesPage'
+// import FacultyPage from './pages/FacultyPage'
+// import FacultyDescription from './pages/universities/components/Faculties/FacultyDescription'
+// import FacultyHistory from './pages/universities/components/Faculties/FacultyHistory'
 
 const App = () => {
   return (
@@ -33,8 +33,8 @@ const App = () => {
             <Route path="description" element={<FacultyDescription />} />
             <Route path="history" element={<FacultyHistory />} />
           </Route>
+          <Route path="*" element={<NotFoundPage />} />
         </Route>
-        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </BrowserRouter>
   );

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import PropTypes from "prop-types";
 import styles from "./Modal.module.css";
 import { HiX } from "react-icons/hi";
@@ -6,7 +6,6 @@ import { HiX } from "react-icons/hi";
 const Modal = ({ isOpen, handleClose, header, children }) => {
   const handleEscape = (event) => {
     if (event.key === "Escape") {
-      console.log("Escape a fost apasat");
       handleClose();
     }
   };
@@ -15,27 +14,27 @@ const Modal = ({ isOpen, handleClose, header, children }) => {
     if (isOpen) {
       document.addEventListener("keydown", handleEscape, false);
     }
-
     return () => {
       document.removeEventListener("keydown", handleEscape, false);
     };
   }, [isOpen, handleClose]);
 
   if (!isOpen) {
-    return;
+    return null;
   }
 
   return (
     <div className={styles.overlay}>
       <dialog className={styles.modal}>
         <header className={`${styles.header} relative`}>
-          <button className={styles.closeBtn} onClick={() => handleClose()}>
+          <button className={styles.closeBtn} onClick={handleClose}>
             <HiX />
           </button>
         </header>
         <main className={styles.content}>
           <h1 className={styles.title}>
-            {header.icon} {header.label}
+            {header.icon}
+            {header.label}
           </h1>
           {children}
         </main>
