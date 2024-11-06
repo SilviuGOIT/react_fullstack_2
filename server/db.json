@@ -29,5 +29,18 @@
       "name": "Los Angeles"
     }
   ],
-  "faculties": []
+  "faculties": [
+    {
+      "id": 1,
+      "name": "Faculty of Math",
+      "description":
+        "Some random description for faculty of mathematics,Some random description for faculty of mathematics,Some random description for faculty of mathematics,Some random description for faculty of mathematics,"
+    },
+    {
+      "id": 2,
+      "name": "Faculty of Physics",
+      "description":
+        "Some random description2 for faculty of Physics,Some random description2 for faculty of Physics,Some random description2 for faculty of Physics,Some random description2 for faculty of Physics"
+    }
+  ]
 }

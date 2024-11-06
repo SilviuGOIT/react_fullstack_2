@@ -1,10 +1,32 @@
-import { combineReducers, createStore } from "redux";
-import { devToolsEnhancer } from "@redux-devtools/extension";
-import { facultiesReducer } from "./reducers/facultiesReducer";
+import { configureStore } from "@reduxjs/toolkit";
+import { facultiesReducer } from "./slices/facultiesSlice";
+import { facultiesSearchTermReducer } from "./slices/facultiesSearchTermSlice";
+// import { citiesReducer } from "./slices/citiesSlice";
+// import { tutorsReducer } from "./slices/tutorsSlice";
+import { persistReducer, persistStore } from "redux-persist";
+import storage from "redux-persist/lib/storage";
 
-export const rootReducer = combineReducers({
-  faculties: facultiesReducer,
+const persistConfig = {
+  key: "root",
+  storage,
+};
+
+// const persistedCities = persistReducer(persistConfig, citiesReducer);
+const persistedFaculties = persistReducer(persistConfig, facultiesReducer);
+const persistedFacultiesSearchTerm = persistReducer(
+  persistConfig,
+  facultiesSearchTermReducer
+);
+// const persistedTutors = persistReducer(persistConfig, tutorsReducer);
+
+const store = configureStore({
+  reducer: {
+    // cities: persistedCities,
+    faculties: persistedFaculties,
+    facultiesSearchTermReducer: persistedFacultiesSearchTerm,
+    // tutors: persistedTutors,
+  },
 });
 
-const enhancer = devToolsEnhancer();
-export const store = createStore(rootReducer, enhancer);
+const persistor = persistStore(store);
+export { store, persistor };

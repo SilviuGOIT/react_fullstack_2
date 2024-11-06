@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
 import facultiesService from "../../../common/service/facultiesService";
@@ -10,14 +10,14 @@ import AlternateButton from "../../../common/components/Button/AlternateButton";
 import Dropdown from "../../../common/components/Dropdown/Dropdown";
 import AddFacultiesForm from "./AddFacultiesForm";
 import SearchBar from "../../../common/components/SearchBar/SearchBar";
-
+import {
+  addFaculty,
+  editFaculty,
+  deleteFaculty,
+} from "../../../../redux/slices/facultiesSlice";
+import { setSearchTerm } from "../../../../redux/slices/facultiesSearchTermSlice";
 import styles from "./Faculties.module.css";
 import { useSelector, useDispatch } from "react-redux";
-import {
-  setFacultiesSearchTerm,
-  addFaculty,
-  deleteFaculty,
-} from "../../../../redux/actions";
 
 export const FACULTIES_KEY = "faculties";
 
@@ -27,8 +27,12 @@ const Faculties = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const list = useSelector((state) => state.faculties.list);
-  const searchTerm = useSelector((state) => state.faculties.searchTerm);
+
+  const list = useSelector((state) => {
+    console.log(state);
+    return state.faculties.faculties;
+  });
+  const searchTerm = useSelector((state) => state.facultiesSearchTerm);
   const dispatch = useDispatch();
 
   const [selectedItem, setSelectedItem] = useState({
@@ -40,6 +44,7 @@ const Faculties = () => {
   useEffect(() => {
     async function getItems() {
       const response = await facultiesService.get();
+      console.log(response, "resp");
       setList(response);
 
       return response;
@@ -47,12 +52,10 @@ const Faculties = () => {
 
     // Aici e logica de executie a functie de useEffect
     setIsLoading(true);
-    getItems()
-      .catch((error) => {
-        console.error(error);
-        setError("A aparut o eroare la obtinerea listei de facultati.");
-      })
-      .finally(setIsLoading(false));
+    getItems().catch((error) => {
+      console.error(error);
+      setError("A aparut o eroare la obtinerea listei de facultati.");
+    });
   }, []);
 
   return (
@@ -65,7 +68,7 @@ const Faculties = () => {
       <SearchBar
         handleChange={(evt) => {
           console.log("event", evt.target.value);
-          dispatch(setFacultiesSearchTerm(evt.target.value));
+          dispatch(setSearchTerm(evt.target.value));
         }}
         placeholder="Search for faculties..."
         searchTerm={searchTerm}
@@ -147,21 +150,20 @@ const Faculties = () => {
     }
 
     const item = yourNextList.find((el) => el.id === editedItem.id);
-    item.name = editedItem.name;
 
     try {
-      await facultiesService.update(editedItem.id, editedItem);
+      dispatch(editFaculty(item));
       setError("");
       setIsEditModalOpen(false);
       setList(yourNextList);
-    } catch (error) {
-      setError("Nu a putut fi modificat orasul");
+    } catch (err) {
+      setError("Nu a putut fi modificat facultatea");
+      console.error(err);
     }
   }
 
   async function handleDeleteItem(item) {
     try {
-      //await facultiesService.remove(item.id);
       setError("");
       dispatch(deleteFaculty(item.id));
       setIsDeleteModalOpen(false);
@@ -195,23 +197,14 @@ const Faculties = () => {
       return;
     }
 
-    const newId =
-      sortedList.length > 0 ? sortedList[sortedList.length - 1].id + 1 : 0;
-
-    const itemToAdd = {
-      id: newId,
-      ...item,
-    };
-
     try {
-      //await facultiesService.create(itemToAdd);
-
       setError("");
       //setList([...list, itemToAdd]);
-      dispatch(addFaculty(itemToAdd));
+      dispatch(addFaculty(item));
       setIsAddFormVisible(false);
     } catch (error) {
-      setError("Nu a putut fi create orasul");
+      console.error(error);
+      setError("Nu a putut fi creata facultatea");
     }
   }
 
@@ -221,12 +214,8 @@ const Faculties = () => {
         <div className="box box--no-items">There are no faculties added.</div>
       );
     }
-    const filteredList =
-      searchTerm.length > 0
-        ? list.filter((el) => el.name.includes(searchTerm))
-        : list;
 
-    return filteredList.map((item) => (
+    return list.map((item) => (
       <div key={item.id} className={`box relative ${styles.listItem}`}>
         <span>{item.name}</span>
         <Dropdown
