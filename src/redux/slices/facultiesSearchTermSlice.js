@@ -4,9 +4,10 @@ const initialState = "";
 
 const facultiesSearchTermSlice = createSlice({
   name: "facultiesSearchTerm",
-  initialState: initialState,
+  initialState,
   reducers: {
     setSearchTerm(state, action) {
+      console.log("state from setSearch", state);
       return action.payload;
     },
   },

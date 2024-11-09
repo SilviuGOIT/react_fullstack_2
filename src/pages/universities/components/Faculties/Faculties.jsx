@@ -10,14 +10,15 @@ import AlternateButton from "../../../common/components/Button/AlternateButton";
 import Dropdown from "../../../common/components/Dropdown/Dropdown";
 import AddFacultiesForm from "./AddFacultiesForm";
 import SearchBar from "../../../common/components/SearchBar/SearchBar";
+import { persistor } from "../../../../redux/store";
+import styles from "./Faculties.module.css";
+import { useSelector, useDispatch } from "react-redux";
 import {
-  addFaculty,
   editFaculty,
+  addFaculty,
   deleteFaculty,
 } from "../../../../redux/slices/facultiesSlice";
 import { setSearchTerm } from "../../../../redux/slices/facultiesSearchTermSlice";
-import styles from "./Faculties.module.css";
-import { useSelector, useDispatch } from "react-redux";
 
 export const FACULTIES_KEY = "faculties";
 
@@ -30,21 +31,21 @@ const Faculties = () => {
 
   const list = useSelector((state) => {
     console.log(state);
-    return state.faculties.faculties;
+    return state.faculties;
   });
-  const searchTerm = useSelector((state) => state.facultiesSearchTerm);
+  const searchTerm = useSelector((state) => state.facultiesSearchTerm || "");
   const dispatch = useDispatch();
 
   const [selectedItem, setSelectedItem] = useState({
     id: 0,
     name: "",
   });
-  const [, setList] = useState([]);
 
+  const [, setList] = useState([]);
   useEffect(() => {
+    persistor.purge();
     async function getItems() {
       const response = await facultiesService.get();
-      console.log(response, "resp");
       setList(response);
 
       return response;
@@ -52,10 +53,12 @@ const Faculties = () => {
 
     // Aici e logica de executie a functie de useEffect
     setIsLoading(true);
-    getItems().catch((error) => {
-      console.error(error);
-      setError("A aparut o eroare la obtinerea listei de facultati.");
-    });
+    getItems()
+      .catch((error) => {
+        console.error(error);
+        setError("A aparut o eroare la obtinerea listei de orase.");
+      })
+      .finally(setIsLoading(false));
   }, []);
 
   return (
@@ -67,7 +70,7 @@ const Faculties = () => {
       <div className={`${styles.itemsList}`}>{renderList(list)}</div>
       <SearchBar
         handleChange={(evt) => {
-          console.log("event", evt.target.value);
+          console.log(evt, "evt");
           dispatch(setSearchTerm(evt.target.value));
         }}
         placeholder="Search for faculties..."
@@ -140,30 +143,40 @@ const Faculties = () => {
     </section>
   );
 
-  async function handleEditItem(editedItem) {
-    const yourNextList = [...list];
+  async function handleEditItem(selectedItem) {
+    const validList = Array.isArray(list)
+      ? list
+      : Object.keys(list)
+          .filter((key) => !isNaN(key))
+          .map((key) => list[key]);
 
-    if (yourNextList.find((el) => el.name === editedItem.name)) {
+    const yourNextList = [...validList];
+
+    if (yourNextList.find((el) => el.name === selectedItem.name)) {
       setError("A faculty with the same name already exists.");
-
       return;
     }
 
-    const item = yourNextList.find((el) => el.id === editedItem.id);
+    const editedItem = yourNextList.find((el) => el.id === selectedItem.id);
+
+    if (!editedItem) {
+      setError("Item not found.");
+      return;
+    }
 
     try {
-      dispatch(editFaculty(item));
+      dispatch(editFaculty(selectedItem));
       setError("");
       setIsEditModalOpen(false);
       setList(yourNextList);
-    } catch (err) {
-      setError("Nu a putut fi modificat facultatea");
-      console.error(err);
+    } catch (error) {
+      setError("Could not update the faculty.");
     }
   }
 
   async function handleDeleteItem(item) {
     try {
+      //await facultiesService.remove(item.id);
       setError("");
       dispatch(deleteFaculty(item.id));
       setIsDeleteModalOpen(false);
@@ -189,33 +202,44 @@ const Faculties = () => {
   }
 
   async function handleAddItem(item) {
-    const sortedList = list.sort((a, b) => a.id > b.id);
-
-    if (sortedList.find((el) => el.name === item.name)) {
+    if (list.find((el) => el.name === item.name)) {
       setError("A faculty with the same name already exists.");
 
       return;
     }
 
     try {
+      //await facultiesService.create(itemToAdd);
+
       setError("");
       //setList([...list, itemToAdd]);
       dispatch(addFaculty(item));
       setIsAddFormVisible(false);
     } catch (error) {
-      console.error(error);
-      setError("Nu a putut fi creata facultatea");
+      setError("Nu a putut fi creat orasul");
     }
   }
 
   function renderList(list) {
-    if (!list || list.length === 0) {
+    // Ensure `list` is an array; if not, default to an empty array
+    const validList = Array.isArray(list)
+      ? list
+      : Object.keys(list)
+          .filter((key) => !isNaN(key)) // Keep only numeric keys
+          .map((key) => list[key]); // Map them to array items
+
+    if (validList.length === 0) {
       return (
         <div className="box box--no-items">There are no faculties added.</div>
       );
     }
 
-    return list.map((item) => (
+    const filteredList =
+      searchTerm.length > 0
+        ? validList.filter((el) => el.name.includes(searchTerm))
+        : validList;
+
+    return filteredList.map((item) => (
       <div key={item.id} className={`box relative ${styles.listItem}`}>
         <span>{item.name}</span>
         <Dropdown
