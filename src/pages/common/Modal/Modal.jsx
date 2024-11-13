@@ -6,7 +6,7 @@ import { HiX } from "react-icons/hi";
 const Modal = ({ isOpen, handleClose, header, children }) => {
   const handleEscape = (event) => {
     if (event.key === "Escape") {
-      console.log("Escape a fost apasat");
+      //console.log("Escape a fost apasat");
       handleClose();
     }
   };

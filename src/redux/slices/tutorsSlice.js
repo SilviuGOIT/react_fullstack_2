@@ -1,54 +1,54 @@
-import { createSlice, nanoid } from "@reduxjs/toolkit"
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axios from "axios";
+import tutorsService from "../../pages/common/service/tutorsService";
 
-const initialState = [{
-    id: 0,
-    firstName: "Stephen",
-    lastName: "Smith",
-    telephone: "123456",
-    email: "john@smith.com",
-    city: "New York",
-    role: "Member"
-}]
+const initialState = {
+  status: "idle", // ""
+  error: "",
+  items: [],
+};
 
-const tutorsSlice = createSlice({
-    name: 'tutors',
-    initialState: initialState,
-    reducers: {
-        addTutor: {
-            reducer: (state, action) => {
-                state.push(action.payload)
-            },
-            prepare: (item) => {
-                return {
-                    payload: {
-                        id: nanoid(),
-                        role: 'Member',
-                        ...item
-                    }
-                }
-            }
-        },
-        editTutor(state, action) {
-            return state.map((item) => {
-                if (item.id !== action.payload.id) {
-                    // This isn't the item we care about - keep it as-is
-                    return item
-                }
-
-                // Otherwise, this is the one we want - return an updated value
-                return {
-                    ...item,
-                    ...action.payload
-                }
-            })
-        },
-        deleteTutor(state, action) {
-            return state.filter((el) => el.id !== action.payload)
-        }
-    }
+export const fetchTutors = createAsyncThunk("tutors/fetchTutors", async () => {
+  const result = await tutorsService.get();
+  return result;
 });
 
+export const addTutor = createAsyncThunk(
+  "tutors/addTutors",
+  // The payload creator receives the partial `{title, content, user}` object
+  async (initialPost) => {
+    const response = await axios.post("/tutors", initialPost);
 
-// Exportam generatoarele de actiuni si reducerul
-export const {addTutor, editTutor, deleteTutor} = tutorsSlice.actions;
+    return response.data;
+  }
+);
+
+const tutorsSlice = createSlice({
+  name: "tutors",
+  initialState: initialState,
+  reducers: {},
+  extraReducers(builder) {
+    builder
+      // GET
+      .addCase(fetchTutors.pending, (state, action) => {
+        state.status = "loading";
+      })
+      .addCase(fetchTutors.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.items = action.payload;
+      })
+      .addCase(fetchTutors.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.error.message;
+      })
+      // CREATE
+      .addCase(addTutor.fulfilled, (state, action) => {
+        // We can directly add the new post object to our posts array
+        state.items.push(action.payload);
+      });
+  },
+});
+
+// Exportăm generatoarelor de acțiuni și reducer-ul
+export const { editTutor, deleteTutor } = tutorsSlice.actions;
 export const tutorsReducer = tutorsSlice.reducer;

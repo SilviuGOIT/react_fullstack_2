@@ -5,11 +5,11 @@ import { tutorsReducer } from "./slices/tutorsSlice";
 import { citiesReducer } from "./slices/citiesSlice";
 import { persistReducer, persistStore } from "redux-persist";
 import storage from "redux-persist/lib/storage";
+import { tutorsFilterReducer } from "./slices/tutorsFilterSlice";
 
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["facultiesSearchTerm"],
 };
 
 const persistedCities = persistReducer(persistConfig, citiesReducer);
@@ -26,6 +26,7 @@ const store = configureStore({
     faculties: persistedFaculties,
     facultiesSearchTerm: persistedFacultiesSearchTerm,
     tutors: persistedTutors,
+    tutorsFilter: tutorsFilterReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

@@ -30,7 +30,7 @@ const Faculties = () => {
   const [error, setError] = useState("");
 
   const list = useSelector((state) => {
-    console.log(state);
+    //console.log(state);
     return state.faculties;
   });
   const searchTerm = useSelector((state) => state.facultiesSearchTerm || "");
@@ -70,7 +70,7 @@ const Faculties = () => {
       <div className={`${styles.itemsList}`}>{renderList(list)}</div>
       <SearchBar
         handleChange={(evt) => {
-          console.log(evt, "evt");
+          //console.log(evt, "evt");
           dispatch(setSearchTerm(evt.target.value));
         }}
         placeholder="Search for faculties..."

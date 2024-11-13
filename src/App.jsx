@@ -41,3 +41,7 @@ const App = () => {
 };
 
 export default App;
+
+//https://redux.js.org/usage/deriving-data-selectors
+//https://medium.com/@matthew.holman/what-is-a-redux-selector-a517acee1fe8
+//https://www.youtube.com/watch?v=oKvF8jcSwIg&ab_channel=Codevolution

@@ -34,7 +34,7 @@ const facultiesSlice = createSlice({
     },
     editFaculty(state, action) {
       const serializedState = JSON.parse(JSON.stringify(state));
-      console.log("Initial state:", serializedState);
+      // console.log("Initial state:", serializedState);
       console.log("Action payload:", action.payload);
 
       const validState = Array.isArray(serializedState)
@@ -43,19 +43,19 @@ const facultiesSlice = createSlice({
             .filter((key) => !isNaN(key))
             .map((key) => serializedState[key]);
 
-      console.log("Valid state as array:", validState);
+      //console.log("Valid state as array:", validState);
 
       const updatedState = validState.map((item) => {
-        console.log("Current item in map:", item);
+        //console.log("Current item in map:", item);
         if (item.id !== action.payload.id) {
-          console.log("Item does not match, returning as is:", item);
+          //  console.log("Item does not match, returning as is:", item);
           return item;
         }
 
-        console.log("Item matches, updating item:", {
-          ...item,
-          ...action.payload,
-        });
+        //  console.log("Item matches, updating item:", {
+        //     ...item,
+        //     ...action.payload,
+        //   });
 
         return {
           ...item,
@@ -63,7 +63,7 @@ const facultiesSlice = createSlice({
         };
       });
 
-      console.log("Updated state:", updatedState);
+      //console.log("Updated state:", updatedState);
       return updatedState;
     },
     deleteFaculty(state, action) {

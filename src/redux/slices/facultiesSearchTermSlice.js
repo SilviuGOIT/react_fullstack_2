@@ -7,7 +7,7 @@ const facultiesSearchTermSlice = createSlice({
   initialState,
   reducers: {
     setSearchTerm(state, action) {
-      console.log("state from setSearch", state);
+      //console.log("state from setSearch", state);
       return action.payload;
     },
   },
